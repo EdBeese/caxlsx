@@ -247,11 +247,25 @@ module Axlsx
           str << '<colItems count="1"><i/></colItems>'
         end
       else
-        str << '<colFields count="' << columns.size.to_s << '">'
-        columns.each do |column_value|
-          str << '<field x="' << header_index_of(column_value).to_s << '"/>'
+        if data.size > 1
+          str << '<colFields count="' << (columns.size + 1).to_s << '">'
+          columns.each do |column_value|
+            str << '<field x="' << header_index_of(column_value).to_s << '"/>'
+          end
+          str << '<field x="-2"/></colFields>'
+          str << "<colItems count=\"#{data.size}\">"
+          str << '<i><x/></i>'
+          (data.size - 1).times do |i|
+            str << "<i i=\"#{i + 1}\"><x v=\"#{i + 1}\"/></i>"
+          end
+          str << '</colItems>'
+        else
+          str << '<colFields count="' << columns.size.to_s << '">'
+          columns.each do |column_value|
+            str << '<field x="' << header_index_of(column_value).to_s << '"/>'
+          end
+          str << '</colFields>'
         end
-        str << '</colFields>'
       end
       unless pages.empty?
         str << '<pageFields count="' << pages.size.to_s << '">'
