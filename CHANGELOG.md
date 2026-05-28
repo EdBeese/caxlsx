@@ -1,6 +1,7 @@
 CHANGELOG
 ---------
 - **Unreleased**
+  - [PR #520](https://github.com/caxlsx/caxlsx/pull/520) Add `use_auto_formatting` and `apply_width_height_formats` accessors to `PivotTable`
 
 - **March.23.26**: 4.4.2
   - [PR #510](https://github.com/caxlsx/caxlsx/pull/510) Add configurable `major_tick_mark` and `minor_tick_mark` attributes to chart axes
