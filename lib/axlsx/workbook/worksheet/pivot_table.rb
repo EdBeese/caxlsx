@@ -265,7 +265,8 @@ module Axlsx
         data.each do |datum_value|
           subtotal_name = datum_value[:subtotal] || 'sum'
           subtotal_name = 'count' if name == 'countNums' # both count & countNums are labelled as count
-          str << "<dataField name='#{subtotal_name.capitalize} of #{datum_value[:ref]}' fld='#{header_index_of(datum_value[:ref])}' baseField='0' baseItem='0'"
+          field_name = datum_value[:name] || "#{subtotal_name.capitalize} of #{datum_value[:ref]}"
+          str << "<dataField name='#{field_name}' fld='#{header_index_of(datum_value[:ref])}' baseField='0' baseItem='0'"
           str << " numFmtId='#{datum_value[:num_fmt]}'" if datum_value[:num_fmt]
           str << " subtotal='#{datum_value[:subtotal]}' " if datum_value[:subtotal]
           str << "/>"
