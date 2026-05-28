@@ -1,6 +1,7 @@
 CHANGELOG
 ---------
 - **Unreleased**
+  - [PR #522](https://github.com/caxlsx/caxlsx/pull/522) Allow custom name for pivot table data fields via :name option
 
 - **March.23.26**: 4.4.2
   - [PR #510](https://github.com/caxlsx/caxlsx/pull/510) Add configurable `major_tick_mark` and `minor_tick_mark` attributes to chart axes
