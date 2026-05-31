@@ -264,4 +264,31 @@ class TestPivotTable < Minitest::Test
 
     refute_includes(xml, 'colFields')
   end
+
+  def test_pivot_table_with_columns_and_more_than_one_data_field
+    # https://github.com/caxlsx/caxlsx/issues/414
+
+    pivot_table = @ws.add_pivot_table('G5:G6', 'A1:E5') do |pt|
+      pt.rows = ['Year']
+      pt.columns = ['Type']
+      pt.data = [
+        { ref: 'Sales' },
+        { ref: 'Month' }
+      ]
+    end
+
+    xml = pivot_table.to_xml_string
+    doc = Nokogiri::XML(xml)
+
+    assert_includes(xml, 'colItems')
+
+    assert_equal('2', doc.at_css('colFields')['count'])
+    assert_equal('-2', doc.css('colFields field').last['x'])
+
+    assert_equal('2', doc.at_css('colItems')['count'])
+    assert_nil(doc.at_css('colItems i')['x'])
+    assert_equal('1', doc.at_css('colItems i[i=1] x')['v'])
+
+    shared_test_pivot_table_xml_validity(pivot_table)
+  end
 end
