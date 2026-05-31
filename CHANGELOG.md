@@ -1,6 +1,8 @@
 CHANGELOG
 ---------
 - **Unreleased**
+
+- **June.09.26**: 4.5.0
   - [PR #527](https://github.com/caxlsx/caxlsx/pull/527) Fix PivotTable countNums subtotal label never applied. Solves [Issue #526](https://github.com/caxlsx/caxlsx/issues/526)
   - [PR #522](https://github.com/caxlsx/caxlsx/pull/522) Allow custom name for pivot table data fields via :name option
   - [PR #520](https://github.com/caxlsx/caxlsx/pull/520) Add `use_auto_formatting` and `apply_width_height_formats` accessors to `PivotTable`
