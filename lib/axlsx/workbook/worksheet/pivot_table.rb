@@ -29,6 +29,8 @@ module Axlsx
       @grand_totals = :both
       @sort_on_headers = {}
       @style_info = {}
+      @use_auto_formatting = true
+      @apply_width_height_formats = true
       parse_options options
       yield self if block_given?
     end
@@ -84,6 +86,14 @@ module Axlsx
     # The sheet used as data source for the pivot table
     # @return [Worksheet]
     attr_writer :data_sheet
+
+    # Whether to apply auto formatting to the pivot table.
+    # @return [Boolean]
+    attr_accessor :use_auto_formatting
+
+    # Whether to apply width/height formats to the pivot table.
+    # @return [Boolean]
+    attr_accessor :apply_width_height_formats
 
     # @see #data_sheet
     def data_sheet
@@ -207,7 +217,11 @@ module Axlsx
       str << ' dataOnRows="1"' if data.size <= 1
       str << ' rowGrandTotals="0"' if grand_totals == :col_only || grand_totals == :none
       str << ' colGrandTotals="0"' if grand_totals == :row_only || grand_totals == :none
-      str << ' applyNumberFormats="0" applyBorderFormats="0" applyFontFormats="0" applyPatternFormats="0" applyAlignmentFormats="0" applyWidthHeightFormats="1" dataCaption="Data" showMultipleLabel="0" showMemberPropertyTips="0" useAutoFormatting="1" indent="0" compact="0" compactData="0" gridDropZones="1" multipleFieldFilters="0">'
+      str << ' applyNumberFormats="0" applyBorderFormats="0" applyFontFormats="0" applyPatternFormats="0" applyAlignmentFormats="0"'
+      str << ' applyWidthHeightFormats="' << (@apply_width_height_formats ? '1' : '0') << '"'
+      str << ' dataCaption="Data" showMultipleLabel="0" showMemberPropertyTips="0"'
+      str << ' useAutoFormatting="' << (@use_auto_formatting ? '1' : '0') << '"'
+      str << ' indent="0" compact="0" compactData="0" gridDropZones="1" multipleFieldFilters="0">'
 
       str << '<location firstDataCol="1" firstDataRow="1" firstHeaderRow="1" ref="' << ref << '"/>'
       str << '<pivotFields count="' << header_cells_count.to_s << '">'
@@ -246,6 +260,18 @@ module Axlsx
         else
           str << '<colItems count="1"><i/></colItems>'
         end
+      elsif data.size > 1
+        str << '<colFields count="' << (columns.size + 1).to_s << '">'
+        columns.each do |column_value|
+          str << '<field x="' << header_index_of(column_value).to_s << '"/>'
+        end
+        str << '<field x="-2"/></colFields>'
+        str << "<colItems count=\"#{data.size}\">"
+        str << '<i><x/></i>'
+        (data.size - 1).times do |i|
+          str << "<i i=\"#{i + 1}\"><x v=\"#{i + 1}\"/></i>"
+        end
+        str << '</colItems>'
       else
         str << '<colFields count="' << columns.size.to_s << '">'
         columns.each do |column_value|

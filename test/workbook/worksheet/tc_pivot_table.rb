@@ -232,6 +232,40 @@ class TestPivotTable < Minitest::Test
     assert_equal('Sum of Sales', doc.at_css('dataFields dataField')['name'])
   end
 
+  def test_use_auto_formatting
+    pivot_table = @ws.add_pivot_table('G5:G6', 'A1:E5') do |pt|
+      pt.data = ['Sales']
+    end
+
+    assert(pivot_table.use_auto_formatting)
+    assert_includes(pivot_table.to_xml_string, 'useAutoFormatting="1"')
+
+    pivot_table = @ws.add_pivot_table('G5:G6', 'A1:E5', { use_auto_formatting: false }) do |pt|
+      pt.data = ['Sales']
+    end
+
+    refute(pivot_table.use_auto_formatting)
+    assert_includes(pivot_table.to_xml_string, 'useAutoFormatting="0"')
+    shared_test_pivot_table_xml_validity(pivot_table)
+  end
+
+  def test_apply_width_height_formats
+    pivot_table = @ws.add_pivot_table('G5:G6', 'A1:E5') do |pt|
+      pt.data = ['Sales']
+    end
+
+    assert(pivot_table.apply_width_height_formats)
+    assert_includes(pivot_table.to_xml_string, 'applyWidthHeightFormats="1"')
+
+    pivot_table = @ws.add_pivot_table('G5:G6', 'A1:E5', { apply_width_height_formats: false }) do |pt|
+      pt.data = ['Sales']
+    end
+
+    refute(pivot_table.apply_width_height_formats)
+    assert_includes(pivot_table.to_xml_string, 'applyWidthHeightFormats="0"')
+    shared_test_pivot_table_xml_validity(pivot_table)
+  end
+
   def test_pivot_table_with_only_one_data_row
     # https://github.com/caxlsx/caxlsx/issues/110
 
@@ -248,5 +282,32 @@ class TestPivotTable < Minitest::Test
     assert_includes(xml, 'colItems')
 
     refute_includes(xml, 'colFields')
+  end
+
+  def test_pivot_table_with_columns_and_more_than_one_data_field
+    # https://github.com/caxlsx/caxlsx/issues/414
+
+    pivot_table = @ws.add_pivot_table('G5:G6', 'A1:E5') do |pt|
+      pt.rows = ['Year']
+      pt.columns = ['Type']
+      pt.data = [
+        { ref: 'Sales' },
+        { ref: 'Month' }
+      ]
+    end
+
+    xml = pivot_table.to_xml_string
+    doc = Nokogiri::XML(xml)
+
+    assert_includes(xml, 'colItems')
+
+    assert_equal('2', doc.at_css('colFields')['count'])
+    assert_equal('-2', doc.css('colFields field').last['x'])
+
+    assert_equal('2', doc.at_css('colItems')['count'])
+    assert_nil(doc.at_css('colItems i')['x'])
+    assert_equal('1', doc.at_css('colItems i[i=1] x')['v'])
+
+    shared_test_pivot_table_xml_validity(pivot_table)
   end
 end
