@@ -1,6 +1,7 @@
 CHANGELOG
 ---------
 - **Unreleased**
+  - [PR #517](https://github.com/caxlsx/caxlsx/pull/517) Fix invalid XML when pivot table has both `columns` and multiple `data` fields configured. Solves [Issue #414](https://github.com/caxlsx/caxlsx/issues/414)
 
 - **March.23.26**: 4.4.2
   - [PR #510](https://github.com/caxlsx/caxlsx/pull/510) Add configurable `major_tick_mark` and `minor_tick_mark` attributes to chart axes
