@@ -213,6 +213,15 @@ class TestPivotTable < Minitest::Test
     assert_equal('2', doc.at_css('colItems i[i=2] x')['v'])
   end
 
+  def test_data_field_name_uses_count_label_for_count_nums_subtotal
+    pivot_table = @ws.add_pivot_table('G5:G6', 'A1:E5') do |pt|
+      pt.data = [{ ref: "Sales", subtotal: 'countNums' }]
+    end
+    doc = Nokogiri::XML(pivot_table.to_xml_string)
+
+    assert_equal('Count of Sales', doc.at_css('dataFields dataField')['name'])
+  end
+
   def test_add_pivot_table_with_custom_name_on_data_field
     pivot_table = @ws.add_pivot_table('G5:G6', 'A1:E5') do |pt|
       pt.data = [{ ref: "Sales", name: "Total Sales" }]
